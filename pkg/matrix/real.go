@@ -40,7 +40,7 @@ func (Ap *RMatrix) MulByR(Bp *RMatrix) *RMatrix {
 		n:    Bp.n,
 	}
 	for i := 0; i < C.m; i++ {
-		C.cols = make([][]float64, C.n)
+		C.cols[i] = make([]float64, C.n)
 		for j := 0; j < C.n; j++ {
 			sum := float64(0)
 			for k := 0; k < Ap.n; k++ {

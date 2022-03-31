@@ -1,10 +1,10 @@
 package matrix
 
 type Shaper interface {
-	Shape() (m, n float64)
+	Shape() (m, n int)
 }
 
-type ColSwaper interface {
+type ColSwapper interface {
 	SwapCol(i, j int)
 }
 
