@@ -11,3 +11,8 @@ type ColSwapper interface {
 type ElGetter interface {
 	GetEl(i, j int) float64
 }
+
+type ShaperElGetter interface {
+	ElGetter
+	Shaper
+}

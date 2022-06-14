@@ -22,7 +22,6 @@ func MakePermutationMatrix(n int) *PMatrix {
 
 func (Pp *PMatrix) GetEl(i, j int) float64 {
 	if i >= Pp.n || j >= Pp.n {
-		// TODO Panic
 		panic("out of rnage")
 	}
 
@@ -68,7 +67,7 @@ func (Ap *PMatrix) MulByPMatrix(Bp *PMatrix) *PMatrix {
 }
 
 // others matrix
-func (Ap *PMatrix) MulByRMatrix(Bp *RMatrix) *RMatrix {
+func (Ap *PMatrix) MulByR(Bp *RMatrix) *RMatrix {
 	if Ap.n != Bp.m {
 		panic(fmt.Sprintf("mul P on R:\n\tmatrix A shape: %vx%v;\n\tmatrix B shape: %vx%v;", Ap.n, Ap.n, Bp.m, Bp.n))
 	}

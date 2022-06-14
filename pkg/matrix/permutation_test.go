@@ -75,7 +75,7 @@ func TestPMulR(t *testing.T) {
 	copy(AAns.cols[0], []float64{3, 4, 5})
 	copy(AAns.cols[1], []float64{0, 1, 2})
 
-	if !(reflect.DeepEqual(AAns.cols, P.MulByRMatrix(A).cols)) {
+	if !(reflect.DeepEqual(AAns.cols, P.MulByR(A).cols)) {
 		t.Errorf("P * A is not correct")
 	}
 }
