@@ -1,7 +1,7 @@
 package lu_decompose
 
 import (
-	"github.com/Reterer/number-methods/pkg/matrix"
+	"github.com/Reterer/number_methods/pkg/matrix"
 )
 
 type LU struct {

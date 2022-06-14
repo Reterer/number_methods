@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/Reterer/number-methods/internal/lu_decompose"
-	"github.com/Reterer/number-methods/internal/utils_lab_1_1/config"
-	"github.com/Reterer/number-methods/pkg/matrix"
+	"github.com/Reterer/number_methods/internal/lu_decompose"
+	"github.com/Reterer/number_methods/internal/utils_lab_1_1/config"
+	"github.com/Reterer/number_methods/pkg/matrix"
 )
 
 func readRMatrix() *matrix.RMatrix {

@@ -1,6 +1,6 @@
-package runthrough
+package run_through
 
-import "github.com/Reterer/number-methods/pkg/matrix"
+import "github.com/Reterer/number_methods/pkg/matrix"
 
 func do(A *matrix.RMatrix, B *matrix.RMatrix) *matrix.RMatrix {
 	m, n := A.Shape()

@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/Reterer/number-methods/pkg/matrix"
+	"github.com/Reterer/number_methods/pkg/matrix"
 )
 
 func readRMatrix() *matrix.RMatrix {
@@ -58,7 +58,4 @@ func readThreeDiagMatrix() *matrix.RMatrix {
 func main() {
 	A := readThreeDiagMatrix()
 	b := readRMatrix()
-
-	// x := run_through.do(A, b)
-
 }

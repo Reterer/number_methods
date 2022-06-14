@@ -1,3 +1,3 @@
-module github.com/Reterer/number-methods
+module github.com/Reterer/number_methods
 
-go 1.17
+go 1.18
