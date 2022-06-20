@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math"
 
 	"github.com/Reterer/number_methods/pkg/matrix"
 )
@@ -34,7 +35,7 @@ func fillRMatrix(mat *matrix.RMatrix) {
 	}
 }
 
-func doIteration(A, b *matrix.RMatrix, k int) *matrix.RMatrix {
+func doIteration(A, b *matrix.RMatrix, eps float64) *matrix.RMatrix {
 	// TODO aii == 0 ?
 	m, n := A.Shape()
 	mm, nn := b.Shape()
@@ -72,14 +73,33 @@ func doIteration(A, b *matrix.RMatrix, k int) *matrix.RMatrix {
 
 	// TODO COPY matrix
 	x := beta.Add(matrix.MakeRealMatrix(m, 1))
-	for iter := 0; iter < k; iter++ {
-		x = beta.Add(alpha.MulByR(x))
+	norm := calcNorm(x)
+	for iter := 0; norm > eps; iter++ {
+		nx := beta.Add(alpha.MulByR(x))
+		norm = calcNorm(nx.Add(x.MulByConstant(-1)))
+		x = nx
+		fmt.Println(norm)
 	}
 
 	return x
 }
 
-func doZeidel(A, b *matrix.RMatrix, k int) *matrix.RMatrix {
+func calcNorm(A *matrix.RMatrix) float64 {
+	var norm float64
+
+	m, n := A.Shape()
+	for i := 0; i < m; i++ {
+		colA := A.GetCol(i)
+		for j := 0; j < n; j++ {
+			norm += colA[j] * colA[j]
+		}
+	}
+	norm = math.Sqrt(norm)
+
+	return norm
+}
+
+func doZeidel(A, b *matrix.RMatrix, eps float64) *matrix.RMatrix {
 	// TODO aii == 0 ?
 	m, n := A.Shape()
 	mm, nn := b.Shape()
@@ -117,17 +137,25 @@ func doZeidel(A, b *matrix.RMatrix, k int) *matrix.RMatrix {
 
 	// TODO COPY matrix
 	x := beta.Add(matrix.MakeRealMatrix(m, 1))
-	for iter := 0; iter < k; iter++ {
+	norm := calcNorm(x)
+
+	for iter := 0; norm > eps; iter++ {
 		// Придется работать вручную
 		// TODO add func in pkg
+		norm = 0
 		for i := 0; i < n; i++ {
 			alphaCol := alpha.GetCol(i)
 			var summ float64
 			for j := 0; j < n; j++ {
 				summ += x.GetEl(j, 0) * alphaCol[j]
 			}
+			prev := x.GetEl(i, 0)
 			x.SetEl(i, 0, summ+beta.GetEl(i, 0))
+			norm += math.Pow(prev-x.GetEl(i, 0), 2)
 		}
+		norm = math.Sqrt(norm)
+		fmt.Println(norm)
+
 	}
 
 	return x
@@ -139,18 +167,21 @@ func printMatrix(mat matrix.ShaperElGetter) {
 
 	for i := 0; i < m; i++ {
 		for j := 0; j < n; j++ {
-			fmt.Printf("%3.0f\t", mat.GetEl(i, j))
+			fmt.Printf("%3.4f\t", mat.GetEl(i, j))
 		}
 		fmt.Println()
 	}
 }
 
 func main() {
+	var eps float64
+	fmt.Scan(&eps)
+
 	A := readRMatrix()
 	b := readRMatrix()
 
-	k := 10
-	// x := doIteration(A, b, k)
-	x := doZeidel(A, b, k)
+	x := doIteration(A, b, eps)
+	printMatrix(x)
+	x = doZeidel(A, b, eps)
 	printMatrix(x)
 }

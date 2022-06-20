@@ -47,7 +47,20 @@ func printMatrix(mat matrix.ShaperElGetter) {
 	}
 }
 
-func doYakobi(A *matrix.RMatrix, k int) (l []float64, x *matrix.RMatrix) {
+func accYakobi(A *matrix.RMatrix) float64 {
+	acc := float64(0)
+	m, n := A.Shape()
+	for i := 0; i < m; i++ {
+		colA := A.GetCol(i)
+		for j := i + 1; j < n; j++ {
+			acc += math.Pow(colA[j], 2)
+		}
+	}
+	acc = math.Sqrt(acc)
+	return acc
+}
+
+func doYakobi(A *matrix.RMatrix, eps float64) (l []float64, x *matrix.RMatrix) {
 	// в течении k итераций
 	//		найти наибольший внедиагональный элемент
 	//		посчитать для него матрицу поворота Uk
@@ -64,7 +77,9 @@ func doYakobi(A *matrix.RMatrix, k int) (l []float64, x *matrix.RMatrix) {
 		x.SetEl(i, i, 1)
 	}
 
-	for iter := 0; iter < k; iter++ {
+	currEps := accYakobi(A)
+	for iter := 0; currEps > eps; iter++ {
+		fmt.Println(currEps)
 		printMatrix(x)
 		printMatrix(A)
 		fmt.Println("--------------\t", iter)
@@ -114,6 +129,7 @@ func doYakobi(A *matrix.RMatrix, k int) (l []float64, x *matrix.RMatrix) {
 		x = x.MulByR(Ui)
 		A = UiT.MulByR(A.MulByR(Ui))
 
+		currEps = accYakobi(A)
 	}
 
 	l = make([]float64, n)
@@ -125,11 +141,11 @@ func doYakobi(A *matrix.RMatrix, k int) (l []float64, x *matrix.RMatrix) {
 }
 
 func main() {
+	var eps float64
+	fmt.Scan(&eps)
 	A := readRMatrix()
 
-	k := 10
-	// x := doIteration(A, b, k)
-	l, x := doYakobi(A, k)
+	l, x := doYakobi(A, eps)
 	fmt.Println(l)
 	printMatrix(x)
 }
