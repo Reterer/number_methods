@@ -4,25 +4,25 @@ import "fmt"
 
 type RMatrix struct {
 	cols [][]float64
-	m, n int
+	n, m int
 }
 
-func MakeRealMatrix(m, n int) *RMatrix {
+func MakeRealMatrix(n, m int) *RMatrix {
 	A := RMatrix{
-		cols: make([][]float64, m),
-		m:    m,
+		cols: make([][]float64, n),
 		n:    n,
+		m:    m,
 	}
 
-	for i := 0; i < m; i++ {
-		A.cols[i] = make([]float64, n)
+	for i := 0; i < n; i++ {
+		A.cols[i] = make([]float64, m)
 	}
 
 	return &A
 }
 
-func (Ap *RMatrix) Shape() (m, n int) {
-	return Ap.m, Ap.n
+func (Ap *RMatrix) Shape() (n, m int) {
+	return Ap.n, Ap.m
 }
 
 func (Ap *RMatrix) SwapCol(i, j int) {
@@ -30,20 +30,20 @@ func (Ap *RMatrix) SwapCol(i, j int) {
 }
 
 func (Ap *RMatrix) MulByR(Bp *RMatrix) *RMatrix {
-	if Ap.n != Bp.m {
-		panic(fmt.Sprintf("mul:\n\tmatrix A shape: %vx%v;\n\tmatrix B shape: %vx%v;", Ap.m, Ap.n, Bp.m, Bp.n))
+	if Ap.m != Bp.n {
+		panic(fmt.Sprintf("mul:\n\tmatrix A shape: %vx%v;\n\tmatrix B shape: %vx%v;", Ap.n, Ap.m, Bp.n, Bp.m))
 	}
 
 	C := RMatrix{
-		cols: make([][]float64, Ap.m),
-		m:    Ap.m,
-		n:    Bp.n,
+		cols: make([][]float64, Ap.n),
+		n:    Ap.n,
+		m:    Bp.m,
 	}
-	for i := 0; i < C.m; i++ {
-		C.cols[i] = make([]float64, C.n)
-		for j := 0; j < C.n; j++ {
+	for i := 0; i < C.n; i++ {
+		C.cols[i] = make([]float64, C.m)
+		for j := 0; j < C.m; j++ {
 			sum := float64(0)
-			for k := 0; k < Ap.n; k++ {
+			for k := 0; k < Ap.m; k++ {
 				sum += Ap.cols[i][k] * Bp.cols[k][j]
 			}
 			C.cols[i][j] = sum
@@ -54,8 +54,8 @@ func (Ap *RMatrix) MulByR(Bp *RMatrix) *RMatrix {
 }
 
 func (Ap *RMatrix) MulByConstant(c float64) *RMatrix {
-	for i := 0; i < Ap.m; i++ {
-		for j := 0; j < Ap.n; j++ {
+	for i := 0; i < Ap.n; i++ {
+		for j := 0; j < Ap.m; j++ {
 			Ap.cols[i][j] *= c
 		}
 	}
@@ -64,18 +64,18 @@ func (Ap *RMatrix) MulByConstant(c float64) *RMatrix {
 
 func (Ap *RMatrix) Add(Bp *RMatrix) *RMatrix {
 	if Ap.n != Bp.n || Ap.m != Bp.m {
-		panic(fmt.Sprintf("add:\n\tmatrix A shape: %vx%v;\n\tmatrix B shape: %vx%v;", Ap.m, Ap.n, Bp.m, Bp.n))
+		panic(fmt.Sprintf("add:\n\tmatrix A shape: %vx%v;\n\tmatrix B shape: %vx%v;", Ap.n, Ap.m, Bp.n, Bp.m))
 	}
 
 	C := RMatrix{
-		cols: make([][]float64, Ap.m),
-		m:    Ap.m,
+		cols: make([][]float64, Ap.n),
 		n:    Ap.n,
+		m:    Ap.m,
 	}
 
-	for i := 0; i < C.m; i++ {
-		C.cols[i] = make([]float64, C.n)
-		for j := 0; j < C.n; j++ {
+	for i := 0; i < C.n; i++ {
+		C.cols[i] = make([]float64, C.m)
+		for j := 0; j < C.m; j++ {
 			C.cols[i][j] = Ap.cols[i][j] + Bp.cols[i][j]
 		}
 	}
@@ -97,8 +97,8 @@ func (Ap *RMatrix) GetCol(i int) []float64 {
 
 // others matrix
 func (Ap *RMatrix) MulByPMatrix(Pp *PMatrix) *RMatrix {
-	if Ap.n != Pp.n {
-		panic(fmt.Sprintf("mul R on P:\n\tmatrix A shape: %vx%v;\n\tmatrix B shape: %vx%v;", Ap.m, Ap.n, Pp.n, Pp.n))
+	if Ap.m != Pp.n {
+		panic(fmt.Sprintf("mul R on P:\n\tmatrix A shape: %vx%v;\n\tmatrix B shape: %vx%v;", Ap.n, Ap.m, Pp.n, Pp.n))
 	}
 
 	for i := 0; i < Pp.n; i++ {
@@ -109,7 +109,7 @@ func (Ap *RMatrix) MulByPMatrix(Pp *PMatrix) *RMatrix {
 			continue
 		}
 
-		for k := 0; k < Ap.m; k++ {
+		for k := 0; k < Ap.n; k++ {
 			Ap.cols[k][i], Ap.cols[k][j] = Ap.cols[k][j], Ap.cols[k][i]
 		}
 	}

@@ -14,10 +14,10 @@ type LU struct {
 }
 
 func MakeLU(perm Permutator, A *matrix.RMatrix) *LU {
-	m, n := A.Shape()
-	if m != n {
+	n, m := A.Shape()
+	if n != m {
 		// TODO ERR
-		panic("m != n")
+		panic("n != m")
 	}
 	dec := LU{
 		perm: perm,
@@ -76,15 +76,15 @@ func (lu *LU) Solve(b *matrix.RMatrix) *matrix.RMatrix {
 		// TODO ERR
 		return nil
 	}
-	m, n := b.Shape()
-	if !(n == 1 && m == lu.n) {
+	n, m := b.Shape()
+	if !(m == 1 && n == lu.n) {
 		// TODO ERR
 		return nil
 	}
 
 	// z := matrix.MakeRealMatrix(m, n)
 
-	x := matrix.MakeRealMatrix(m, n)
+	x := matrix.MakeRealMatrix(n, m)
 	return x
 }
 

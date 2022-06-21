@@ -12,22 +12,22 @@ import (
 // [ ] Анализ количество итераций, необходимых для достижения заданной точности
 
 func readRMatrix() *matrix.RMatrix {
-	var m, n int
-	if _, err := fmt.Scan(&m, &n); err != nil {
+	var n, m int
+	if _, err := fmt.Scan(&n, &m); err != nil {
 		panic("can't read matrix shape")
 	}
 
-	mat := matrix.MakeRealMatrix(m, n)
+	mat := matrix.MakeRealMatrix(n, m)
 	fillRMatrix(mat)
 
 	return mat
 }
 
 func fillRMatrix(mat *matrix.RMatrix) {
-	m, n := mat.Shape()
-	for i := 0; i < m; i++ {
+	n, m := mat.Shape()
+	for i := 0; i < n; i++ {
 		col := mat.GetCol(i)
-		for j := 0; j < n; j++ {
+		for j := 0; j < m; j++ {
 			if _, err := fmt.Scan(&col[j]); err != nil {
 				panic("can't read element")
 			}
@@ -37,23 +37,23 @@ func fillRMatrix(mat *matrix.RMatrix) {
 
 func doIteration(A, b *matrix.RMatrix, eps float64) *matrix.RMatrix {
 	// TODO aii == 0 ?
-	m, n := A.Shape()
-	mm, nn := b.Shape()
-	if m != n && m > 0 {
+	n, m := A.Shape()
+	nn, mm := b.Shape()
+	if n != m && n > 0 {
 		// TODO PANIC
 		return nil
-	} else if nn != 1 {
+	} else if mm != 1 {
 		// TODO PANIC
 		return nil
-	} else if mm != m {
+	} else if nn != n {
 		// TODO PANIC
 		return nil
 	}
 
-	beta := matrix.MakeRealMatrix(m, 1)
-	alpha := matrix.MakeRealMatrix(m, n)
+	beta := matrix.MakeRealMatrix(n, 1)
+	alpha := matrix.MakeRealMatrix(n, m)
 
-	for i := 0; i < m; i++ {
+	for i := 0; i < n; i++ {
 		aCol := A.GetCol(i)
 		aii := aCol[i]
 		alphaCol := alpha.GetCol(i)
@@ -63,7 +63,7 @@ func doIteration(A, b *matrix.RMatrix, eps float64) *matrix.RMatrix {
 		}
 		beta.SetEl(i, 0, b.GetEl(i, 0)/aii)
 
-		for j := 0; j < n; j++ {
+		for j := 0; j < m; j++ {
 			if j == i {
 				continue
 			}
@@ -72,7 +72,7 @@ func doIteration(A, b *matrix.RMatrix, eps float64) *matrix.RMatrix {
 	}
 
 	// TODO COPY matrix
-	x := beta.Add(matrix.MakeRealMatrix(m, 1))
+	x := beta.Add(matrix.MakeRealMatrix(n, 1))
 	norm := calcNorm(x)
 	for iter := 0; norm > eps; iter++ {
 		nx := beta.Add(alpha.MulByR(x))
@@ -87,10 +87,10 @@ func doIteration(A, b *matrix.RMatrix, eps float64) *matrix.RMatrix {
 func calcNorm(A *matrix.RMatrix) float64 {
 	var norm float64
 
-	m, n := A.Shape()
-	for i := 0; i < m; i++ {
+	n, m := A.Shape()
+	for i := 0; i < n; i++ {
 		colA := A.GetCol(i)
-		for j := 0; j < n; j++ {
+		for j := 0; j < m; j++ {
 			norm += colA[j] * colA[j]
 		}
 	}
@@ -101,23 +101,23 @@ func calcNorm(A *matrix.RMatrix) float64 {
 
 func doZeidel(A, b *matrix.RMatrix, eps float64) *matrix.RMatrix {
 	// TODO aii == 0 ?
-	m, n := A.Shape()
-	mm, nn := b.Shape()
-	if m != n && m > 0 {
+	n, m := A.Shape()
+	nn, mm := b.Shape()
+	if n != m && n > 0 {
 		// TODO PANIC
 		return nil
-	} else if nn != 1 {
+	} else if mm != 1 {
 		// TODO PANIC
 		return nil
-	} else if mm != m {
+	} else if nn != n {
 		// TODO PANIC
 		return nil
 	}
 
-	beta := matrix.MakeRealMatrix(m, 1)
-	alpha := matrix.MakeRealMatrix(m, n)
+	beta := matrix.MakeRealMatrix(n, 1)
+	alpha := matrix.MakeRealMatrix(n, m)
 
-	for i := 0; i < m; i++ {
+	for i := 0; i < n; i++ {
 		aCol := A.GetCol(i)
 		aii := aCol[i]
 		alphaCol := alpha.GetCol(i)
@@ -127,7 +127,7 @@ func doZeidel(A, b *matrix.RMatrix, eps float64) *matrix.RMatrix {
 		}
 		beta.SetEl(i, 0, b.GetEl(i, 0)/aii)
 
-		for j := 0; j < n; j++ {
+		for j := 0; j < m; j++ {
 			if j == i {
 				continue
 			}
@@ -136,7 +136,7 @@ func doZeidel(A, b *matrix.RMatrix, eps float64) *matrix.RMatrix {
 	}
 
 	// TODO COPY matrix
-	x := beta.Add(matrix.MakeRealMatrix(m, 1))
+	x := beta.Add(matrix.MakeRealMatrix(n, 1))
 	norm := calcNorm(x)
 
 	for iter := 0; norm > eps; iter++ {
@@ -146,7 +146,7 @@ func doZeidel(A, b *matrix.RMatrix, eps float64) *matrix.RMatrix {
 		for i := 0; i < n; i++ {
 			alphaCol := alpha.GetCol(i)
 			var summ float64
-			for j := 0; j < n; j++ {
+			for j := 0; j < m; j++ {
 				summ += x.GetEl(j, 0) * alphaCol[j]
 			}
 			prev := x.GetEl(i, 0)
@@ -162,11 +162,11 @@ func doZeidel(A, b *matrix.RMatrix, eps float64) *matrix.RMatrix {
 }
 
 func printMatrix(mat matrix.ShaperElGetter) {
-	m, n := mat.Shape()
-	fmt.Printf("%d %d\n", m, n)
+	n, m := mat.Shape()
+	fmt.Printf("%d %d\n", n, m)
 
-	for i := 0; i < m; i++ {
-		for j := 0; j < n; j++ {
+	for i := 0; i < n; i++ {
+		for j := 0; j < m; j++ {
 			fmt.Printf("%3.4f\t", mat.GetEl(i, j))
 		}
 		fmt.Println()

@@ -38,9 +38,9 @@ func (Pp *PMatrix) SwapCol(i, j int) {
 	Pp.perm[i], Pp.perm[j] = Pp.perm[j], Pp.perm[i]
 }
 
-func (Pp *PMatrix) Shape() (m, n int) {
-	m = Pp.n
+func (Pp *PMatrix) Shape() (n, m int) {
 	n = Pp.n
+	m = Pp.n
 	return
 }
 
@@ -68,8 +68,8 @@ func (Ap *PMatrix) MulByPMatrix(Bp *PMatrix) *PMatrix {
 
 // others matrix
 func (Ap *PMatrix) MulByR(Bp *RMatrix) *RMatrix {
-	if Ap.n != Bp.m {
-		panic(fmt.Sprintf("mul P on R:\n\tmatrix A shape: %vx%v;\n\tmatrix B shape: %vx%v;", Ap.n, Ap.n, Bp.m, Bp.n))
+	if Ap.n != Bp.n {
+		panic(fmt.Sprintf("mul P on R:\n\tmatrix A shape: %vx%v;\n\tmatrix B shape: %vx%v;", Ap.n, Ap.n, Bp.n, Bp.m))
 	}
 
 	for i := 0; i < Ap.n; i++ {

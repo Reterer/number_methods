@@ -29,7 +29,7 @@ func TestShape(t *testing.T) {
 
 	shaper := Shaper(P)
 
-	if m, n := shaper.Shape(); !(m == 3 && n == 3) {
+	if n, m := shaper.Shape(); !(n == 3 && m == 3) {
 		t.Errorf("P.Shape() is not eq 3,3")
 	}
 }

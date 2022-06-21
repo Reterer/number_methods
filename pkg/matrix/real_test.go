@@ -1,6 +1,7 @@
 package matrix
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 )
@@ -9,7 +10,7 @@ func TestShaper(t *testing.T) {
 	A := MakeRealMatrix(2, 3)
 	shaper := Shaper(A)
 
-	if m, n := shaper.Shape(); !(m == 2 && n == 3) {
+	if n, m := shaper.Shape(); !(n == 2 && m == 3) {
 		t.Errorf("shape A is not 2x3")
 	}
 }
@@ -64,6 +65,7 @@ func TestMulByR(t *testing.T) {
 
 	if !(reflect.DeepEqual(CAns.cols, A.MulByR(B).cols)) {
 		t.Errorf("A * B is not correct")
+		fmt.Println(A.cols, B.cols, A.MulByR(B).cols, CAns.cols)
 	}
 }
 

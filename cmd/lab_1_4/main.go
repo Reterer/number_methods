@@ -12,22 +12,22 @@ import (
 // [ ] Анализ количество итераций, необходимых для достижения заданной точности
 
 func readRMatrix() *matrix.RMatrix {
-	var m, n int
-	if _, err := fmt.Scan(&m, &n); err != nil {
+	var n, m int
+	if _, err := fmt.Scan(&n, &m); err != nil {
 		panic("can't read matrix shape")
 	}
 
-	mat := matrix.MakeRealMatrix(m, n)
+	mat := matrix.MakeRealMatrix(n, m)
 	fillRMatrix(mat)
 
 	return mat
 }
 
 func fillRMatrix(mat *matrix.RMatrix) {
-	m, n := mat.Shape()
-	for i := 0; i < m; i++ {
+	n, m := mat.Shape()
+	for i := 0; i < n; i++ {
 		col := mat.GetCol(i)
-		for j := 0; j < n; j++ {
+		for j := 0; j < m; j++ {
 			if _, err := fmt.Scan(&col[j]); err != nil {
 				panic("can't read element")
 			}
@@ -36,11 +36,11 @@ func fillRMatrix(mat *matrix.RMatrix) {
 }
 
 func printMatrix(mat matrix.ShaperElGetter) {
-	m, n := mat.Shape()
-	fmt.Printf("%d %d\n", m, n)
+	n, m := mat.Shape()
+	fmt.Printf("%d %d\n", n, m)
 
-	for i := 0; i < m; i++ {
-		for j := 0; j < n; j++ {
+	for i := 0; i < n; i++ {
+		for j := 0; j < m; j++ {
 			fmt.Printf("%3.4f\t", mat.GetEl(i, j))
 		}
 		fmt.Println()
@@ -49,10 +49,10 @@ func printMatrix(mat matrix.ShaperElGetter) {
 
 func accYakobi(A *matrix.RMatrix) float64 {
 	acc := float64(0)
-	m, n := A.Shape()
-	for i := 0; i < m; i++ {
+	n, m := A.Shape()
+	for i := 0; i < n; i++ {
 		colA := A.GetCol(i)
-		for j := i + 1; j < n; j++ {
+		for j := i + 1; j < m; j++ {
 			acc += math.Pow(colA[j], 2)
 		}
 	}
@@ -71,9 +71,9 @@ func doYakobi(A *matrix.RMatrix, eps float64) (l []float64, x *matrix.RMatrix) {
 	// TODO оптимизировать
 	// TODO проверки на симметричность?
 
-	m, n := A.Shape()
-	x = matrix.MakeRealMatrix(m, n)
-	for i := 0; i < n; i++ {
+	n, m := A.Shape()
+	x = matrix.MakeRealMatrix(n, m)
+	for i := 0; i < m; i++ {
 		x.SetEl(i, i, 1)
 	}
 
@@ -86,9 +86,9 @@ func doYakobi(A *matrix.RMatrix, eps float64) (l []float64, x *matrix.RMatrix) {
 
 		var maxI, maxJ int = 0, 1
 		var maxV float64
-		for i := 0; i < m; i++ {
+		for i := 0; i < n; i++ {
 			aCol := A.GetCol(i)
-			for j := i + 1; j < n; j++ {
+			for j := i + 1; j < m; j++ {
 				if math.Abs(aCol[j]) > maxV {
 					maxV = math.Abs(aCol[j])
 					maxI = i
@@ -97,7 +97,7 @@ func doYakobi(A *matrix.RMatrix, eps float64) (l []float64, x *matrix.RMatrix) {
 			}
 		}
 
-		Ui := matrix.MakeRealMatrix(m, n)
+		Ui := matrix.MakeRealMatrix(n, m)
 		UiT := matrix.MakeRealMatrix(m, n)
 		for i := 0; i < n; i++ {
 			if i == maxI || i == maxJ {

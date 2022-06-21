@@ -13,22 +13,22 @@ import (
 // [ ] Анализ количество итераций, необходимых для достижения заданной точности
 
 func readRMatrix() *matrix.RMatrix {
-	var m, n int
-	if _, err := fmt.Scan(&m, &n); err != nil {
+	var n, m int
+	if _, err := fmt.Scan(&n, &m); err != nil {
 		panic("can't read matrix shape")
 	}
 
-	mat := matrix.MakeRealMatrix(m, n)
+	mat := matrix.MakeRealMatrix(n, m)
 	fillRMatrix(mat)
 
 	return mat
 }
 
 func fillRMatrix(mat *matrix.RMatrix) {
-	m, n := mat.Shape()
-	for i := 0; i < m; i++ {
+	n, m := mat.Shape()
+	for i := 0; i < n; i++ {
 		col := mat.GetCol(i)
-		for j := 0; j < n; j++ {
+		for j := 0; j < m; j++ {
 			if _, err := fmt.Scan(&col[j]); err != nil {
 				panic("can't read element")
 			}
@@ -37,11 +37,11 @@ func fillRMatrix(mat *matrix.RMatrix) {
 }
 
 func printMatrix(mat matrix.ShaperElGetter) {
-	m, n := mat.Shape()
-	fmt.Printf("%d %d\n", m, n)
+	n, m := mat.Shape()
+	fmt.Printf("%d %d\n", n, m)
 
-	for i := 0; i < m; i++ {
-		for j := 0; j < n; j++ {
+	for i := 0; i < n; i++ {
+		for j := 0; j < m; j++ {
 			fmt.Printf("%3.4f\t", mat.GetEl(i, j))
 		}
 		fmt.Println()
@@ -59,32 +59,32 @@ func sign(num float64) float64 {
 }
 
 func doQR(A *matrix.RMatrix) (Q, R *matrix.RMatrix) {
-	m, n := A.Shape()
+	n, m := A.Shape()
 	// TODO добавить проверки
 
-	Q = matrix.MakeRealMatrix(m, n)
-	for i := 0; i < m; i++ {
+	Q = matrix.MakeRealMatrix(n, m)
+	for i := 0; i < n; i++ {
 		Q.SetEl(i, i, 1)
 	}
 
-	for i := 0; i < m-1; i++ {
+	for i := 0; i < n-1; i++ {
 		var norm float64
-		for j := i; j < n; j++ {
+		for j := i; j < m; j++ {
 			norm += math.Pow(A.GetEl(j, i), 2)
 		}
 		norm = math.Pow(norm, 0.5)
 
-		v := matrix.MakeRealMatrix(m, 1)
-		vT := matrix.MakeRealMatrix(1, m)
+		v := matrix.MakeRealMatrix(n, 1)
+		vT := matrix.MakeRealMatrix(1, n)
 		v.SetEl(i, 0, A.GetEl(i, i)+sign(A.GetEl(i, i))*norm)
 		vT.SetEl(0, i, A.GetEl(i, i)+sign(A.GetEl(i, i))*norm)
-		for j := i + 1; j < n; j++ {
+		for j := i + 1; j < m; j++ {
 			v.SetEl(j, 0, A.GetEl(j, i))
 			vT.SetEl(0, j, A.GetEl(j, i))
 		}
 
-		H := matrix.MakeRealMatrix(m, n)
-		for i := 0; i < m; i++ {
+		H := matrix.MakeRealMatrix(n, m)
+		for i := 0; i < n; i++ {
 			H.SetEl(i, i, 1)
 		}
 		c := -2 / vT.MulByR(v).GetEl(0, 0)
@@ -117,9 +117,9 @@ func calcL(A *matrix.RMatrix, i int) (l_0, l_1 complex128) {
 
 func calcNorm(A *matrix.RMatrix, i, j int) float64 {
 	var norm float64
-	m, _ := A.Shape()
+	n, _ := A.Shape()
 
-	for ; i < m; i++ {
+	for ; i < n; i++ {
 		norm += math.Pow(A.GetEl(i, j), 2)
 	}
 	norm = math.Sqrt(norm)
@@ -129,11 +129,11 @@ func calcNorm(A *matrix.RMatrix, i, j int) float64 {
 
 func getL(A *matrix.RMatrix, pl []complex128, eps float64) ([]complex128, bool) {
 	ok := true
-	m, _ := A.Shape()
-	l := make([]complex128, m)
-	for i := 0; i < m; i++ {
+	n, _ := A.Shape()
+	l := make([]complex128, n)
+	for i := 0; i < n; i++ {
 		// Комплексно сопряжонный
-		if i+1 < m && math.Abs(A.GetEl(i+1, i)) > eps {
+		if i+1 < n && math.Abs(A.GetEl(i+1, i)) > eps {
 			l_0, l_1 := calcL(A, i)
 
 			l[i] = l_0
@@ -157,8 +157,8 @@ func main() {
 	fmt.Scan(&eps)
 
 	A := readRMatrix()
-	m, _ := A.Shape()
-	l := make([]complex128, m)
+	n, _ := A.Shape()
+	l := make([]complex128, n)
 	isRun := true
 	for i := 0; isRun; i++ {
 		Q, R := doQR(A)

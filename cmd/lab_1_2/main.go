@@ -9,22 +9,22 @@ import (
 )
 
 func readRMatrix() *matrix.RMatrix {
-	var m, n int
-	if _, err := fmt.Scan(&m, &n); err != nil {
+	var n, m int
+	if _, err := fmt.Scan(&n, &m); err != nil {
 		panic("can't read matrix shape")
 	}
 
-	mat := matrix.MakeRealMatrix(m, n)
+	mat := matrix.MakeRealMatrix(n, m)
 	fillRMatrix(mat)
 
 	return mat
 }
 
 func fillRMatrix(mat *matrix.RMatrix) {
-	m, n := mat.Shape()
-	for i := 0; i < m; i++ {
+	n, m := mat.Shape()
+	for i := 0; i < n; i++ {
 		col := mat.GetCol(i)
-		for j := 0; j < n; j++ {
+		for j := 0; j < m; j++ {
 			if _, err := fmt.Scan(&col[j]); err != nil {
 				panic("can't read element")
 			}
@@ -33,18 +33,18 @@ func fillRMatrix(mat *matrix.RMatrix) {
 }
 
 func readThreeDiagMatrix() *matrix.RMatrix {
-	var m, n int
-	if _, err := fmt.Scan(&m, &n); err != nil {
+	var n, m int
+	if _, err := fmt.Scan(&n, &m); err != nil {
 		panic("can't read matrix shape")
 	}
 
-	mat := matrix.MakeRealMatrix(m, n)
+	mat := matrix.MakeRealMatrix(n, m)
 
-	for i := 0; i < m; i++ {
+	for i := 0; i < n; i++ {
 		col := mat.GetCol(i)
 		for k := 0; k < 3; k++ {
 			j := -1 + k + i
-			if j < 0 || j >= n {
+			if j < 0 || j >= m {
 				continue
 			}
 
@@ -58,11 +58,11 @@ func readThreeDiagMatrix() *matrix.RMatrix {
 }
 
 func printMatrix(mat matrix.ShaperElGetter) {
-	m, n := mat.Shape()
-	fmt.Printf("%d %d\n", m, n)
+	n, m := mat.Shape()
+	fmt.Printf("%d %d\n", n, m)
 
-	for i := 0; i < m; i++ {
-		for j := 0; j < n; j++ {
+	for i := 0; i < n; i++ {
+		for j := 0; j < m; j++ {
 			fmt.Printf("%3.0f\t", mat.GetEl(i, j))
 		}
 		fmt.Println()
@@ -70,18 +70,18 @@ func printMatrix(mat matrix.ShaperElGetter) {
 }
 
 func printEq(A, x, b matrix.ShaperElGetter) {
-	m, n := A.Shape()
+	n, m := A.Shape()
 
-	for i := 0; i < m; i++ {
+	for i := 0; i < n; i++ {
 		sum := float64(0)
-		for j := 0; j < n; j++ {
+		for j := 0; j < m; j++ {
 			if x == nil {
 				fmt.Printf("%3.3f*x"+strconv.Itoa(j+1)+" ", A.GetEl(i, j))
 			} else {
 				fmt.Printf("%3.3f*%3.3f ", A.GetEl(i, j), x.GetEl(j, 0))
 				sum += A.GetEl(i, j) * x.GetEl(j, 0)
 			}
-			if j+1 < n {
+			if j+1 < m {
 				fmt.Printf("+ ")
 			}
 		}

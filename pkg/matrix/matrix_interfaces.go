@@ -1,7 +1,7 @@
 package matrix
 
 type Shaper interface {
-	Shape() (m, n int)
+	Shape() (n, m int)
 }
 
 type ColSwapper interface {
