@@ -2,69 +2,12 @@ package main
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/Reterer/number_methods/internal/lu_decompose"
+	"github.com/Reterer/number_methods/internal/utils"
 	"github.com/Reterer/number_methods/internal/utils_lab_1_1/config"
 	"github.com/Reterer/number_methods/pkg/matrix"
 )
-
-func readRMatrix() *matrix.RMatrix {
-	var n, m int
-	if _, err := fmt.Scan(&n, &m); err != nil {
-		panic("can't read matrix shape")
-	}
-
-	mat := matrix.MakeRealMatrix(n, m)
-	fillRMatrix(mat)
-
-	return mat
-}
-
-func fillRMatrix(mat *matrix.RMatrix) {
-	n, m := mat.Shape()
-	for i := 0; i < n; i++ {
-		col := mat.GetCol(i)
-		for j := 0; j < m; j++ {
-			if _, err := fmt.Scan(&col[j]); err != nil {
-				panic("can't read element")
-			}
-		}
-	}
-}
-
-func printMatrix(mat matrix.ShaperElGetter) {
-	n, m := mat.Shape()
-	fmt.Printf("%d %d\n", n, m)
-
-	for i := 0; i < n; i++ {
-		for j := 0; j < m; j++ {
-			fmt.Printf("%3.0f\t", mat.GetEl(i, j))
-		}
-		fmt.Println()
-	}
-}
-
-func printEq(A, x, b matrix.ShaperElGetter) {
-	n, m := A.Shape()
-
-	for i := 0; i < n; i++ {
-		sum := float64(0)
-		for j := 0; j < m; j++ {
-			if x == nil {
-				fmt.Printf("%3.3f*x"+strconv.Itoa(j+1)+" ", A.GetEl(i, j))
-			} else {
-				fmt.Printf("%3.3f*%3.3f ", A.GetEl(i, j), x.GetEl(j, 0))
-				sum += A.GetEl(i, j) * x.GetEl(j, 0)
-			}
-			if j+1 < m {
-				fmt.Printf("+ ")
-			}
-		}
-
-		fmt.Printf("= %3.3f\t (act %3.3f)\n", b.GetEl(i, 0), sum)
-	}
-}
 
 func MakeLU(A *matrix.RMatrix) *lu_decompose.LU {
 	cnfg := config.Get()
@@ -94,20 +37,32 @@ func MakeLU(A *matrix.RMatrix) *lu_decompose.LU {
 func main() {
 	config.Init()
 
-	A := readRMatrix()
+	A := utils.ReadRMatrix()
 	LU := MakeLU(A)
 	LU.Decompose()
 
-	printMatrix(LU.P)
-	printMatrix(LU.L)
-	printMatrix(LU.U)
+	utils.PrintMatrix(LU.P)
+	utils.PrintMatrix(LU.L)
+	utils.PrintMatrix(LU.U)
 
 	fmt.Println("Проверка --- PA ?= LU")
-	printMatrix(LU.P.MulByR(A))
-	printMatrix(LU.L.MulByR(LU.U))
+	utils.PrintMatrix(LU.P.MulByR(A))
+	utils.PrintMatrix(LU.L.MulByR(LU.U))
 
-	b := readRMatrix()
+	// Нахождение обратной матирцы AX = E
+	fmt.Println("Нахождение обратной матрицы")
+	n, _ := A.Shape()
+	E := matrix.MakeRealMatrix(n, n)
+	for i := 0; i < n; i++ {
+		E.SetEl(i, i, 1)
+	}
+	invA := LU.Solve(E)
+	utils.PrintMatrix(invA)
+
+	fmt.Println("Решение СЛАУ")
+	// Решение СЛАУ
+	b := utils.ReadRMatrix()
 	x := LU.Solve(b)
-	printEq(A, x, b)
-	printMatrix(x)
+	utils.PrintEq(A, x, b)
+	utils.PrintMatrix(x)
 }

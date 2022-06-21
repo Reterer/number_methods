@@ -1,6 +1,7 @@
 package lu_decompose
 
 import (
+	"github.com/Reterer/number_methods/internal/utils"
 	"github.com/Reterer/number_methods/pkg/matrix"
 )
 
@@ -77,21 +78,36 @@ func (lu *LU) Solve(b *matrix.RMatrix) *matrix.RMatrix {
 		return nil
 	}
 	n, m := b.Shape()
-	if !(m == 1 && n == lu.n) {
+	if !(n == lu.n) {
 		// TODO ERR
 		return nil
 	}
 
-	// z := matrix.MakeRealMatrix(m, n)
+	nB := lu.P.MulByR(b)
 
+	z := matrix.MakeRealMatrix(n, m)
+	for k := 0; k < m; k++ {
+		z.SetEl(0, k, nB.GetEl(0, k))
+		for i := 1; i < n; i++ {
+			var sum float64
+			for j := 0; j < i; j++ {
+				sum += lu.L.GetEl(i, j) * z.GetEl(j, k)
+			}
+			z.SetEl(i, k, nB.GetEl(i, k)-sum)
+		}
+	}
+	utils.PrintMatrix(z)
 	x := matrix.MakeRealMatrix(n, m)
-	return x
-}
-
-func (lu *LU) CalcInverse() *matrix.RMatrix {
-	if !lu.decomposed {
-		// TODO ERR
-		return nil
+	for k := 0; k < m; k++ {
+		x.SetEl(n-1, k, z.GetEl(n-1, k)/lu.U.GetEl(n-1, n-1))
+		for i := n - 2; i >= 0; i-- {
+			var sum float64
+			for j := i + 1; j < n; j++ {
+				sum += lu.U.GetEl(i, j) * x.GetEl(j, k)
+			}
+			x.SetEl(i, k, (z.GetEl(i, k)-sum)/lu.U.GetEl(i, i))
+		}
 	}
-	return nil
+
+	return x
 }

@@ -4,48 +4,9 @@ import (
 	"fmt"
 	"math"
 
+	"github.com/Reterer/number_methods/internal/utils"
 	"github.com/Reterer/number_methods/pkg/matrix"
 )
-
-// [x] Метод простых итераций
-// [x] Метод Зейделя
-// [ ] Анализ количество итераций, необходимых для достижения заданной точности
-
-func readRMatrix() *matrix.RMatrix {
-	var n, m int
-	if _, err := fmt.Scan(&n, &m); err != nil {
-		panic("can't read matrix shape")
-	}
-
-	mat := matrix.MakeRealMatrix(n, m)
-	fillRMatrix(mat)
-
-	return mat
-}
-
-func fillRMatrix(mat *matrix.RMatrix) {
-	n, m := mat.Shape()
-	for i := 0; i < n; i++ {
-		col := mat.GetCol(i)
-		for j := 0; j < m; j++ {
-			if _, err := fmt.Scan(&col[j]); err != nil {
-				panic("can't read element")
-			}
-		}
-	}
-}
-
-func printMatrix(mat matrix.ShaperElGetter) {
-	n, m := mat.Shape()
-	fmt.Printf("%d %d\n", n, m)
-
-	for i := 0; i < n; i++ {
-		for j := 0; j < m; j++ {
-			fmt.Printf("%3.4f\t", mat.GetEl(i, j))
-		}
-		fmt.Println()
-	}
-}
 
 func accYakobi(A *matrix.RMatrix) float64 {
 	acc := float64(0)
@@ -61,13 +22,6 @@ func accYakobi(A *matrix.RMatrix) float64 {
 }
 
 func doYakobi(A *matrix.RMatrix, eps float64) (l []float64, x *matrix.RMatrix) {
-	// в течении k итераций
-	//		найти наибольший внедиагональный элемент
-	//		посчитать для него матрицу поворота Uk
-	//		A = Uk.T * A * Uk
-	//		U = U * Uk
-	//	повторить
-
 	// TODO оптимизировать
 	// TODO проверки на симметричность?
 
@@ -80,8 +34,8 @@ func doYakobi(A *matrix.RMatrix, eps float64) (l []float64, x *matrix.RMatrix) {
 	currEps := accYakobi(A)
 	for iter := 0; currEps > eps; iter++ {
 		fmt.Println(currEps)
-		printMatrix(x)
-		printMatrix(A)
+		utils.PrintMatrix(x)
+		utils.PrintMatrix(A)
 		fmt.Println("--------------\t", iter)
 
 		var maxI, maxJ int = 0, 1
@@ -117,13 +71,13 @@ func doYakobi(A *matrix.RMatrix, eps float64) (l []float64, x *matrix.RMatrix) {
 		Ui.SetEl(maxI, maxJ, -math.Sin(theta))
 		Ui.SetEl(maxJ, maxI, math.Sin(theta))
 		Ui.SetEl(maxJ, maxJ, math.Cos(theta))
-		printMatrix(Ui)
+		utils.PrintMatrix(Ui)
 
 		UiT.SetEl(maxI, maxI, math.Cos(theta))
 		UiT.SetEl(maxI, maxJ, math.Sin(theta))
 		UiT.SetEl(maxJ, maxI, -math.Sin(theta))
 		UiT.SetEl(maxJ, maxJ, math.Cos(theta))
-		printMatrix(UiT)
+		utils.PrintMatrix(UiT)
 
 		// Применения
 		x = x.MulByR(Ui)
@@ -143,9 +97,9 @@ func doYakobi(A *matrix.RMatrix, eps float64) (l []float64, x *matrix.RMatrix) {
 func main() {
 	var eps float64
 	fmt.Scan(&eps)
-	A := readRMatrix()
+	A := utils.ReadRMatrix()
 
 	l, x := doYakobi(A, eps)
 	fmt.Println(l)
-	printMatrix(x)
+	utils.PrintMatrix(x)
 }
