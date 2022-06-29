@@ -1,7 +1,6 @@
 package lu_decompose
 
 import (
-	"github.com/Reterer/number_methods/internal/utils"
 	"github.com/Reterer/number_methods/pkg/matrix"
 )
 
@@ -96,7 +95,6 @@ func (lu *LU) Solve(b *matrix.RMatrix) *matrix.RMatrix {
 			z.SetEl(i, k, nB.GetEl(i, k)-sum)
 		}
 	}
-	utils.PrintMatrix(z)
 	x := matrix.MakeRealMatrix(n, m)
 	for k := 0; k < m; k++ {
 		x.SetEl(n-1, k, z.GetEl(n-1, k)/lu.U.GetEl(n-1, n-1))
