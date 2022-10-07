@@ -22,8 +22,6 @@ func accYakobi(A *matrix.RMatrix) float64 {
 }
 
 func doYakobi(A *matrix.RMatrix, eps float64) (l []float64, x *matrix.RMatrix) {
-	// TODO оптимизировать
-	// TODO проверки на симметричность?
 
 	n, m := A.Shape()
 	x = matrix.MakeRealMatrix(n, m)
@@ -64,20 +62,19 @@ func doYakobi(A *matrix.RMatrix, eps float64) (l []float64, x *matrix.RMatrix) {
 		aij := A.GetEl(maxI, maxJ)
 		aii := A.GetEl(maxI, maxI)
 		ajj := A.GetEl(maxJ, maxJ)
-
-		theta := math.Atan((2*aij)/(aii-ajj)) / 2
-		fmt.Println(theta, math.Cos(theta), math.Sin(theta), aij, aii, ajj, maxI, maxJ)
+		theta := math.Pi / 4
+		if aii != ajj {
+			theta = math.Atan((2*aij)/(aii-ajj)) / 2
+		}
 		Ui.SetEl(maxI, maxI, math.Cos(theta))
 		Ui.SetEl(maxI, maxJ, -math.Sin(theta))
 		Ui.SetEl(maxJ, maxI, math.Sin(theta))
 		Ui.SetEl(maxJ, maxJ, math.Cos(theta))
-		utils.PrintMatrix(Ui)
 
 		UiT.SetEl(maxI, maxI, math.Cos(theta))
 		UiT.SetEl(maxI, maxJ, math.Sin(theta))
 		UiT.SetEl(maxJ, maxI, -math.Sin(theta))
 		UiT.SetEl(maxJ, maxJ, math.Cos(theta))
-		utils.PrintMatrix(UiT)
 
 		// Применения
 		x = x.MulByR(Ui)

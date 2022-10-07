@@ -64,6 +64,7 @@ func lsm(points []Point, n int) func(float64) float64 {
 	}
 }
 
+// TODO Добавить график интерполяции, и в 3_2 тоже
 func main() {
 	{
 		points := []Point{

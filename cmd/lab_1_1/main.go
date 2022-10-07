@@ -46,7 +46,7 @@ func main() {
 	utils.PrintMatrix(LU.U)
 
 	fmt.Println("Проверка --- PA ?= LU")
-	utils.PrintMatrix(LU.P.MulByR(A))
+	utils.PrintMatrix(LU.P.MulByR(A.Copy()))
 	utils.PrintMatrix(LU.L.MulByR(LU.U))
 
 	// Нахождение обратной матирцы AX = E
@@ -58,6 +58,9 @@ func main() {
 	}
 	invA := LU.Solve(E)
 	utils.PrintMatrix(invA)
+	fmt.Println("Проверка --- A*invA ?= E")
+	utils.PrintMatrix(A.MulByR(invA))
+	utils.PrintMatrix(E)
 
 	fmt.Println("Решение СЛАУ")
 	// Решение СЛАУ

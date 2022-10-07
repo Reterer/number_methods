@@ -116,3 +116,14 @@ func (Ap *RMatrix) MulByPMatrix(Pp *PMatrix) *RMatrix {
 
 	return Ap
 }
+
+func (Ap *RMatrix) Copy() *RMatrix {
+	B := MakeRealMatrix(Ap.n, Ap.m)
+	for i := 0; i < B.n; i++ {
+		col := make([]float64, Ap.m)
+		copy(col, Ap.cols[i])
+		B.cols[i] = col
+	}
+
+	return B
+}

@@ -6,13 +6,10 @@ func Do(A *matrix.RMatrix, B *matrix.RMatrix) *matrix.RMatrix {
 	n, m := A.Shape()
 	nn, mm := B.Shape()
 	if n != m && n > 0 {
-		// TODO PANIC
 		return nil
 	} else if mm != 1 {
-		// TODO PANIC
 		return nil
 	} else if nn != n {
-		// TODO PANIC
 		return nil
 	}
 

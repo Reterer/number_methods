@@ -48,7 +48,7 @@ func main() {
 		return math.Exp(2*x) + 3
 	}
 
-	// f(x) = e ^ (2x) + 3x - 4 => 2x = ln(4-3x)/2
+	// f(x) = e ^ (2x) + 3x - 4 => x = ln(4-3x)/2
 	phi := func(x float64) float64 {
 		return math.Log(4-3*x) / 2
 	}

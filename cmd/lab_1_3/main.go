@@ -8,20 +8,34 @@ import (
 	"github.com/Reterer/number_methods/pkg/matrix"
 )
 
+func prepareA(A *matrix.RMatrix) {
+	n, _ := A.Shape()
+	for i := 0; i < n; i++ {
+		if A.GetEl(i, i) == 0 {
+			for j := i + 1; j < n; j++ {
+				if A.GetEl(j, i) != 0 {
+					A.SwapCol(i, j)
+					return
+				}
+			}
+			panic("Я не смог поменять местами строки так, что бы на главной диагонали не было нулей")
+		}
+
+	}
+}
+
 func doIteration(A, b *matrix.RMatrix, eps float64) *matrix.RMatrix {
 	n, m := A.Shape()
 	nn, mm := b.Shape()
 	if n != m && n > 0 {
-		// TODO PANIC
 		return nil
 	} else if mm != 1 {
-		// TODO PANIC
 		return nil
 	} else if nn != n {
-		// TODO PANIC
 		return nil
 	}
 
+	prepareA(A)
 	beta := matrix.MakeRealMatrix(n, 1)
 	alpha := matrix.MakeRealMatrix(n, m)
 
@@ -30,7 +44,6 @@ func doIteration(A, b *matrix.RMatrix, eps float64) *matrix.RMatrix {
 		aii := aCol[i]
 		alphaCol := alpha.GetCol(i)
 		if aii == 0 {
-			// TODO aii == 0 ?
 			return nil
 		}
 		beta.SetEl(i, 0, b.GetEl(i, 0)/aii)
@@ -43,8 +56,7 @@ func doIteration(A, b *matrix.RMatrix, eps float64) *matrix.RMatrix {
 		}
 	}
 
-	// TODO COPY matrix
-	x := beta.Add(matrix.MakeRealMatrix(n, 1))
+	x := beta.Copy()
 	norm := calcNorm(x)
 	for iter := 0; norm > eps; iter++ {
 		nx := beta.Add(alpha.MulByR(x))
@@ -72,20 +84,17 @@ func calcNorm(A *matrix.RMatrix) float64 {
 }
 
 func doZeidel(A, b *matrix.RMatrix, eps float64) *matrix.RMatrix {
-	// TODO aii == 0 ?
 	n, m := A.Shape()
 	nn, mm := b.Shape()
 	if n != m && n > 0 {
-		// TODO PANIC
 		return nil
 	} else if mm != 1 {
-		// TODO PANIC
 		return nil
 	} else if nn != n {
-		// TODO PANIC
 		return nil
 	}
 
+	prepareA(A)
 	beta := matrix.MakeRealMatrix(n, 1)
 	alpha := matrix.MakeRealMatrix(n, m)
 
@@ -94,7 +103,6 @@ func doZeidel(A, b *matrix.RMatrix, eps float64) *matrix.RMatrix {
 		aii := aCol[i]
 		alphaCol := alpha.GetCol(i)
 		if aii == 0 {
-			// TODO PANIC
 			return nil
 		}
 		beta.SetEl(i, 0, b.GetEl(i, 0)/aii)
@@ -107,13 +115,11 @@ func doZeidel(A, b *matrix.RMatrix, eps float64) *matrix.RMatrix {
 		}
 	}
 
-	// TODO COPY matrix
-	x := beta.Add(matrix.MakeRealMatrix(n, 1))
+	x := beta.Copy()
 	norm := calcNorm(x)
 
 	for iter := 0; norm > eps; iter++ {
 		// Придется работать вручную
-		// TODO add func in pkg
 		norm = 0
 		for i := 0; i < n; i++ {
 			alphaCol := alpha.GetCol(i)

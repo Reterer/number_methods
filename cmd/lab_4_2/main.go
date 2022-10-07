@@ -13,6 +13,8 @@ type Point struct {
 	x, y float64
 }
 
+// TODO повторить какого порядка эти методы?
+// TODO лучше сделать рисуночки
 func rungeKuttaMethod(f, g fn, a, b, h, y0, dydx0 float64) []Point {
 	res := make([]Point, 1)
 	res[0] = Point{

@@ -24,13 +24,18 @@ func PermMin(lu *LU, i int) {
 	if lu.U.GetEl(i, i) != 0 {
 		return
 	}
+	maxJ := i
+	valueJ := lu.U.GetEl(i, i)
 	for j := i; j < lu.n; j++ {
-		if lu.U.GetEl(j, i) != 0 {
-			PermDefault(lu, i, j)
-			return
+		if math.Abs(lu.U.GetEl(j, i)) > math.Abs(valueJ) {
+			maxJ = j
+			valueJ = lu.U.GetEl(j, i)
 		}
 	}
-	// todo handle
+	if valueJ != 0 {
+		PermDefault(lu, i, maxJ)
+		return
+	}
 	panic("эту матрицу нельзя разложить в LU")
 }
 
@@ -39,7 +44,7 @@ func PermEveryIteration(lu *LU, i int) {
 	maxV := lu.U.GetEl(i, i)
 	for j := i; j < lu.n; j++ {
 		el := lu.U.GetEl(j, i)
-		if math.Abs(float64(1)-el) < math.Abs(float64(1)-maxV) {
+		if math.Abs(el) < math.Abs(maxV) {
 			maxV = el
 			maxJ = j
 		}
@@ -48,7 +53,6 @@ func PermEveryIteration(lu *LU, i int) {
 		PermDefault(lu, i, maxJ)
 		return
 	}
-	// todo handle
 	panic("эту матрицу нельзя разложить в LU")
 }
 

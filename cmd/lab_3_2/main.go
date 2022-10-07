@@ -74,6 +74,8 @@ func MakeSplainInterpolation(points []Point) func(float64) float64 {
 	fmt.Println("C: ", c)
 	fmt.Println("D: ", d)
 
+	// TODO вывести все коэффиценты, сплайн как объект
+
 	return func(x float64) float64 {
 		// find interval
 		i := 0

@@ -21,7 +21,6 @@ func sign(num float64) float64 {
 
 func doQR(A *matrix.RMatrix) (Q, R *matrix.RMatrix) {
 	n, m := A.Shape()
-	// TODO добавить проверки
 
 	Q = matrix.MakeRealMatrix(n, m)
 	for i := 0; i < n; i++ {

@@ -16,7 +16,6 @@ type LU struct {
 func MakeLU(perm Permutator, A *matrix.RMatrix) *LU {
 	n, m := A.Shape()
 	if n != m {
-		// TODO ERR
 		panic("n != m")
 	}
 	dec := LU{
@@ -37,7 +36,6 @@ func MakeLU(perm Permutator, A *matrix.RMatrix) *LU {
 
 func (lu *LU) Decompose() {
 	if lu.decomposed {
-		// TODO ERR
 		return
 	}
 
@@ -52,7 +50,6 @@ func (lu *LU) Decompose() {
 		// Строка, ниже которой мы будем обнулять i столбец
 		mainCol := lu.U.GetCol(i)
 		if mainCol[i] == 0 {
-			// todo handle
 			panic("Main element is eq 0")
 		}
 		// Для каждой более нижней строки
@@ -73,16 +70,14 @@ func (lu *LU) Decompose() {
 
 func (lu *LU) Solve(b *matrix.RMatrix) *matrix.RMatrix {
 	if !lu.decomposed {
-		// TODO ERR
 		return nil
 	}
 	n, m := b.Shape()
 	if !(n == lu.n) {
-		// TODO ERR
 		return nil
 	}
 
-	nB := lu.P.MulByR(b)
+	nB := lu.P.MulByR(b.Copy())
 
 	z := matrix.MakeRealMatrix(n, m)
 	for k := 0; k < m; k++ {
