@@ -32,7 +32,6 @@ func simpsonMethod(xs, xe, h float64, f fn) float64 {
 	return res / 6
 }
 
-// TODO повотрить как работает этот метод.
 func rungeRombergMethod(fh1, fh2, h1, h2 float64) float64 {
 	k := h1 / h2
 	return fh2 + (fh2-fh1)/(math.Pow(k, 2)-1)

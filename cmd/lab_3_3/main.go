@@ -1,16 +1,22 @@
 package main
 
 import (
+	"encoding/csv"
 	"fmt"
 	"math"
+	"os"
 
 	"github.com/Reterer/number_methods/internal/lu_decompose"
 	"github.com/Reterer/number_methods/pkg/matrix"
+	"gonum.org/v1/plot"
+	"gonum.org/v1/plot/plotter"
+	"gonum.org/v1/plot/plotutil"
 )
 
 type Point struct {
 	x, y float64
 }
+type ftype func(float64) float64
 
 func squareError(points []Point, f func(float64) float64) float64 {
 	var err float64
@@ -64,30 +70,93 @@ func lsm(points []Point, n int) func(float64) float64 {
 	}
 }
 
-// TODO Добавить график интерполяции, и в 3_2 тоже
+func readFromFile(filePath string) []Point {
+	f, err := os.Open(filePath)
+	if err != nil {
+		panic("Unable to read input file " + filePath + " " + err.Error())
+	}
+	defer f.Close()
+
+	csvReader := csv.NewReader(f)
+	records, err := csvReader.ReadAll()
+	if err != nil {
+		panic("Unable to parse file as CSV for " + filePath + " " + err.Error())
+	}
+
+	points := make([]Point, len(records))
+	for i := 0; i < len(records); i++ {
+		_, err := fmt.Sscanf(records[i][0], "%f", &points[i].x)
+		if err != nil {
+			panic(err.Error())
+		}
+		_, err = fmt.Sscanf(records[i][1], "%f", &points[i].y)
+		if err != nil {
+			panic(err.Error())
+		}
+	}
+	return points
+}
+
+func genPlot(path string, f_1 ftype, f_2 ftype, points []Point, a float64, b float64, h float64) {
+	p := plot.New()
+
+	p.Title.Text = "Interpolation"
+	p.X.Label.Text = "X"
+	p.Y.Label.Text = "Y"
+
+	steps := int((b - a) / h)
+	f1_p := make(plotter.XYs, steps)
+	f2_p := make(plotter.XYs, steps)
+	x := a
+	for step := 0; step < steps; step++ {
+		f1_p[step].X = x
+		f1_p[step].Y = f_1(x)
+		f2_p[step].X = x
+		f2_p[step].Y = f_2(x)
+
+		x += h
+	}
+	err := plotutil.AddLinePoints(p,
+		"lsm-1", f1_p,
+		"lsm-2", f2_p,
+	)
+	if err != nil {
+		panic(err)
+	}
+
+	// Scatter
+	scatter_data := make(plotter.XYs, len(points))
+	for i := 0; i < len(points); i++ {
+		scatter_data[i].X = points[i].x
+		scatter_data[i].Y = points[i].y
+	}
+	s, err := plotter.NewScatter(scatter_data)
+	if err != nil {
+		panic(err)
+	}
+	s.GlyphStyle.Radius = 10
+	p.Add(s)
+	p.Legend.Add("Points", s)
+	// Save the plot to a PNG file.
+	if err := p.Save(2000, 2000, path); err != nil {
+		panic(err)
+	}
+}
+
 func main() {
-	{
-		points := []Point{
-			{0, 0},
-			{1.7, 1.3038},
-			{3.4, 1.8439},
-			{5.1, 2.2583},
-			{6.8, 2.6077},
-			{8.5, 2.9155},
-		}
-		f := lsm(points, 1)
-		fmt.Println("a + bx: ", f(5.1), " serr: ", squareError(points, f))
+	if len(os.Args) < 2 {
+		panic("Аргументов должно быть два")
 	}
-	{
-		points := []Point{
-			{0, 0},
-			{1.7, 1.3038},
-			{3.4, 1.8439},
-			{5.1, 2.2583},
-			{6.8, 2.6077},
-			{8.5, 2.9155},
-		}
-		f := lsm(points, 2)
-		fmt.Println("a + bx + cx^2: ", f(5.1), " serr: ", squareError(points, f))
-	}
+	inputFile := os.Args[1]
+	outputFile := os.Args[2]
+	points := readFromFile(inputFile)
+
+	f_1 := lsm(points, 1)
+	fmt.Println("a + bx: ", f_1(5.1), " serr: ", squareError(points, f_1))
+
+	f_2 := lsm(points, 2)
+	fmt.Println("a + bx + cx^2: ", f_2(5.1), " serr: ", squareError(points, f_2))
+
+	genPlot(outputFile, f_1, f_2, points, points[0].x, points[len(points)-1].x, 0.1)
+
 }

@@ -13,8 +13,6 @@ type Point struct {
 	x, y float64
 }
 
-// TODO повторить какого порядка эти методы?
-// TODO лучше сделать рисуночки
 func rungeKuttaMethod(f, g fn, a, b, h, y0, dydx0 float64) []Point {
 	res := make([]Point, 1)
 	res[0] = Point{
@@ -157,9 +155,6 @@ func main() {
 		etacurr float64   = 1
 		eps     float64   = 0.001
 	)
-
-	// fmt.Println(shootingMethod(f, g, a, b, y0, y1, h[0], etaprev, etacurr, eps))
-	// fmt.Println(finiteDifferenceMethod(p, q, a, b, y0, y1, h[0], alpha, beta, gamma, delta))
 
 	{
 		p1 := shootingMethod(f, g, a, b, y0, y1, h[0], etaprev, etacurr, eps)
