@@ -2,6 +2,8 @@ module github.com/Reterer/number_methods
 
 go 1.18
 
+require gonum.org/v1/plot v0.12.0
+
 require (
 	git.sr.ht/~sbinet/gg v0.3.1 // indirect
 	github.com/ajstarks/svgo v0.0.0-20211024235047-1546f124cd8b // indirect
@@ -11,5 +13,4 @@ require (
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	golang.org/x/image v0.0.0-20220902085622-e7cb96979f69 // indirect
 	golang.org/x/text v0.3.7 // indirect
-	gonum.org/v1/plot v0.12.0 // indirect
 )
