@@ -121,7 +121,6 @@ func MakeExpInterpolation(points []Point) func(float64) float64 {
 			a[i] = math.Log(r) / (x3 - x2)
 			b[i] = (y1 - c[i]) * math.Exp(-a[i]*x1)
 		} else {
-			fmt.Println("Ну да, будем использовать более служный метод")
 			// Иначе используем более сложный метод нахождения коэф.
 			dif := (y3 - y2) * (x2 - x1) / ((y2 - y1) * (x3 - x2))
 			Amin := math.Log(dif) / (x3 - x1)
@@ -134,7 +133,7 @@ func MakeExpInterpolation(points []Point) func(float64) float64 {
 				FF := (y2-y1)*(x3-x2)*u - (y3-y2)*(x2-x1)*v
 				dA := -F / FF
 				A0 = A0 + dA
-				if math.Abs(dA/Amin) < 0.00000000000001 {
+				if math.Abs(dA/Amin) < eps {
 					break
 				}
 			}
